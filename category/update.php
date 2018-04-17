@@ -8,29 +8,30 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
  
 // include database and object files
 include_once '../config/database.php';
-include_once '../objects/product.php';
+include_once '../objects/category.php';
  
 // get database connection
 $database = new Database();
 $db = $database->getConnection();
  
 // prepare product object
-$product = new Product($db);
+$category = new category($db);
  
 // get id of product to be edited
 $data = json_decode(file_get_contents("php://input"));
  
  
-// set ID property of product to be edited
-$product->id = $data->id;
+// set ID property of category to be edited
+$category->id = $data->id;
  
 // set product property values
-$product->name = $data->name;
-$product->category_id = $data->category_id;
+$category->name = $data->name;
+$category->description = $data->description;
 
-if($product->update()){
+
+if($category->update()){
     echo '{';
-        echo '"message": "Product was updated.","data":{"id":"'.$product->id.'","name":"'.$product->name.'","category_id":"'.$product->category_id.'"}';
+        echo '"message": "Category was updated.","data":{"id":"'.$category->id.'","name":"'.$category->name.'","category_id":"'.$category->category_description.'"}';
     echo '}';
 }
 

@@ -47,5 +47,42 @@ class Category{
  
         return $stmt;
     }
+
+    // update the product
+    function update(){
+     
+        // update query
+        $query = "UPDATE
+                    " . $this->table_name . "
+                SET
+                    name = :name
+                    description = :description
+
+                WHERE
+                    id = :id";
+     
+        // prepare query statement
+        $stmt = $this->conn->prepare($query);
+     
+        // sanitize
+        $this->name=htmlspecialchars(strip_tags($this->name));
+        $this->id=htmlspecialchars(strip_tags($this->id));
+        $this->category_description=htmlspecialchars(strip_tags($this->category_description));
+
+     
+        // bind new values
+        $stmt->bindParam(':name', $this->name);
+        $stmt->bindParam(':id', $this->id);
+        $stmt->bindParam(':description', $this->description);
+     
+        // execute the query
+        if($stmt->execute()){
+           // = 'table='. $this->table_name. '--id='. $this->id. '--name='. $this->name;
+            // return $this->query;
+            return true;
+        }
+     
+        return false;
+    }
 }
 ?>

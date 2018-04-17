@@ -22,7 +22,7 @@ $data = json_decode(file_get_contents("php://input"));
  
 // set product property values
 $product->name = $data->name;
-$product->price = $data->price;
+//$product->price = $data->price;
 $product->description = $data->description;
 $product->category_id = $data->category_id;
 $product->created = date('Y-m-d H:i:s');
@@ -30,9 +30,12 @@ $product->created = date('Y-m-d H:i:s');
 // create the product
 if($product->create()){
     echo '{';
-        echo '"message": "Product was created."';
+        echo '"message": "Product was created.","data":{"id":"'.$product->lastInsertId.'","name":"'.$product->name.'","description":"'.$product->description.'","category_id":"'.$product->category_id.'","category_price":"'.$product->price.'", "category_name":"xxxx"}';
     echo '}';
 }
+
+
+
  
 // if unable to create the product, tell the user
 else{
