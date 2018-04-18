@@ -6,40 +6,39 @@ header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
  
-// include database and object files
+// get database connection
+include_once '../config/database.php';
+ 
+// instantiate category object
 include_once '../objects/category.php';
  
-// get database connection
 $database = new Database();
 $db = $database->getConnection();
  
-// prepare product object
 $category = new Category($db);
  
-// get id of product to be edited
+// get posted data
 $data = json_decode(file_get_contents("php://input"));
  
- 
-// set ID property of category to be edited
-$category->id = $data->id;
- 
-// set product property values
+// set category property values
 $category->name = $data->name;
 $category->description = $data->description;
-
-
-
-if($category->update()){
+$category->created = date('Y-m-d H:i:s');
+ 
+// create the category
+if($category->create()){
     echo '{';
-        echo '"message": "Category was updated.","data":{"id":"'.$category->id.'","name":"'.$category->name.'","category_id":"'.$category->description.'"}';
+        echo '"message": "Product was created.","data":{"id":"'.$category->lastInsertId.'","name":"'.$category->name.'","description":"'.$category->description.'"}';
     echo '}';
 }
 
+
+
  
-// if unable to update the product, tell the user
+// if unable to create the category, tell the user
 else{
     echo '{';
-        echo '"message": "Unable to update Category.","error": "true"';
+        echo '"message": "Unable to create category."';
     echo '}';
 }
 ?>
