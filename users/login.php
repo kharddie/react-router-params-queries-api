@@ -72,23 +72,6 @@ try{
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
    } else {
        echo '{"error":{"text":"Bad request wrong username and password"}}';
    }
