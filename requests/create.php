@@ -21,11 +21,13 @@ $requests = new Requests($db);
 $data = json_decode(file_get_contents("php://input"));
  
 // set product property values
+
+$requests->title = $data->title;                
 $requests->id = $data->id;
 $requests->address = $data->address;
-$requests->title = $data->title;
+$requests->due_date = $data->due_date;
 $requests->content = $data->content;
-$requests->due_date = date('Y-m-d H:i:s');
+$requests->status = "open";
 $requests->created = date('Y-m-d H:i:s');
 
 

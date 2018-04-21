@@ -23,27 +23,31 @@ class Requests{
     public $content;
     public $due_date;
     public $title;
-
-
-    
+    public $status;
 
 // read request
 function read(){
  
     // select all query
-    $query = "SELECT
-                id,
-                user_id, 
-                address, 
-                content, 
-                due_date,  
-                title, 
-                created
-            FROM
-                " . $this->table_name . " 
-            ORDER BY
-                created DESC";
- 
+$query = "SELECT 
+                u.name, 
+                r.title, 
+                r.id, 
+                r.address, 
+                r.due_date, 
+                r.content, 
+                r.status, 
+                r.created, 
+                r.modified 
+            FROM 
+                " . $this->table_name . " r 
+            LEFT JOIN 
+                users u 
+            ON 
+                r.user_id = u.id
+             ORDER BY
+                r.created DESC";
+
     // prepare query statement
     $stmt = $this->conn->prepare($query);
  

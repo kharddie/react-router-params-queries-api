@@ -36,14 +36,17 @@ if($num>0){
 
         $requests_item=array(
             "id" => $id,
-            "user_id" => $user_id,
+            "name" => $name,
+            "title" => $title,
             "address" => $address,
+            "status" => $status,
+            "modified" => $modified,
             "content" => html_entity_decode($content),
             "due_date" => $due_date,
-            "title" => $title,
+            
             "created" => $created
         );
- 
+
         array_push($requests_arr["data"], $requests_item);
     }
  
