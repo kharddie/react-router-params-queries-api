@@ -57,6 +57,36 @@ class Users{
 
 
 
+    // forgot password
+    public function ForgotPwd(){
+        //select all data
+
+
+        $query = "SELECT
+        id, name, email
+        FROM
+        " . $this->table_name . "
+        WHERE
+        email=:email";
+
+        $stmt = $this->conn->prepare( $query );
+
+        $stmt->bindParam(":email", $this->email);
+
+        //print_r($param_new);
+
+
+        try {
+            $stmt->execute();
+            return $stmt;
+        }
+        catch(PDOException $e) {
+            echo '{"error":{"text":'. $e->getMessage() .'}}'; 
+        }
+    }
+
+
+
     // create product
     function create(){
 

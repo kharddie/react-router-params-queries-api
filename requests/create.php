@@ -45,7 +45,7 @@ $requests->created = date('Y-m-d H:i:s');
 // request the requests
 if($requests->create()){
     echo '{';
-        echo '"message": "Request was created.","data":{"id":"'.$requests->lastInsertId.'","title":"'.$requests->title.'","address":"'.$requests->address.'","content":"'.$requests->content.'","due_date":"'.$requests->due_date.'"}';
+        echo '"message": "Request was successfully created.","data":{"id":"'.$requests->lastInsertId.'","title":"'.$requests->title.'","address":"'.$requests->address.'","content":"'.$requests->content.'","due_date":"'.$requests->due_date.'"}';
     echo '}';
 }
 

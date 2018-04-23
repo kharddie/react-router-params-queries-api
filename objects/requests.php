@@ -68,6 +68,7 @@ function create(){
                 address=:address,
                 content=:content,
                 due_date=:due_date,
+                status=:status,
                 title=:title,
                 created=:created";
  
@@ -79,6 +80,7 @@ function create(){
     $this->address=htmlspecialchars(strip_tags($this->address));
     $this->content=htmlspecialchars(strip_tags($this->content));
     $this->title=htmlspecialchars(strip_tags($this->title));
+    $this->status=htmlspecialchars(strip_tags($this->status));
     $this->due_date=htmlspecialchars(strip_tags($this->due_date));
     $this->created=htmlspecialchars(strip_tags($this->created));
 
@@ -88,6 +90,7 @@ function create(){
     $stmt->bindParam(":content", $this->content);
     $stmt->bindParam(":due_date", $this->due_date);
     $stmt->bindParam(":title", $this->title);
+    $stmt->bindParam(":status", $this->status);
     $stmt->bindParam(":created", $this->created);
  
     // execute query
