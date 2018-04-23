@@ -9,6 +9,8 @@
   // include database and object files
   include_once '../config/database.php';
   include_once '../objects/users.php';
+$root = realpath(dirname(dirname(__FILE__)));
+require_once $root . '\objects\JWT.php';
 
 
 
@@ -69,9 +71,6 @@
 
      echo '{"user": ' .$users->userdata .',"token": "' .$jwt. '"}';
 
-
-
-
    } else {
      echo '{"error":{"text":"Bad request wrong username and password"}}';
    }
@@ -80,5 +79,11 @@
  catch(PDOException $e) {
   echo '{"error":{"text":'. $e->getMessage() .'}}';
 }
+
+$encodedJWT = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMiJ9.ppAc_KRukLqkHhji-kBm2BKAn0eM8S0hcKncWxUKd2I';
+$secret = 'abC123!';
+$decodedJWT = JWT::decode($encodedJWT, $secret);
+
+print_r($decodedJWT);
 
 ?>
