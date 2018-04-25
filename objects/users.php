@@ -13,6 +13,7 @@ class Users{
     public $created;
     public $lastInsertId;
     public $userdata;
+    public $user_name;
 
     public function __construct($db){
         $this->conn = $db;
@@ -26,7 +27,7 @@ class Users{
 
 
         $query = "SELECT
-        id, name, email
+        id, name,user_name, email
         FROM
         " . $this->table_name . "
         WHERE
@@ -130,6 +131,48 @@ class Users{
 
          //;   
     }
+
+
+    // update the product
+function UpdateProfile(){
+ 
+    // update query
+    $query = "UPDATE
+                " . $this->table_name . "
+            SET
+                name = :name,
+                user_name = :user_name,
+                email = :email
+
+            WHERE
+                id = :id";
+
+    // prepare query statement
+    $stmt = $this->conn->prepare($query);
+ 
+    // sanitize
+    $this->name=htmlspecialchars(strip_tags($this->name));
+    $this->user_name=htmlspecialchars(strip_tags($this->user_name));
+    $this->email=htmlspecialchars(strip_tags($this->email));
+    $this->id=htmlspecialchars(strip_tags($this->id));
+
+ 
+    // bind new values
+    $stmt->bindParam(':name', $this->name);
+    $stmt->bindParam(':user_name', $this->user_name);
+    $stmt->bindParam(':email', $this->email);
+    $stmt->bindParam(':id', $this->id);
+ 
+    // execute the query
+    if($stmt->execute()){
+       // = 'table='. $this->table_name. '--id='. $this->id. '--name='. $this->name;
+        // return $this->query;
+        return true;
+    }
+ 
+    return false;
+}
+
 
 }
 ?>

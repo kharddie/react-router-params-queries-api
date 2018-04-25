@@ -9,8 +9,8 @@
   // include database and object files
   include_once '../config/database.php';
   include_once '../objects/users.php';
-$root = realpath(dirname(dirname(__FILE__)));
-require_once $root . '\objects\JWT.php';
+  include_once '../objects/encodeDecodeJWT.php';
+
 
 
 
@@ -20,19 +20,16 @@ require_once $root . '\objects\JWT.php';
 
   // initialize object
   $users = new Users($db);
-
+  $encodeJWT = new encodeDecodeJWT($db);
   // get posted data
   $data = json_decode(file_get_contents("php://input"));
 
-  // set product property values
+  // set usres property values
 
   $users->username = $data->username;
-  //$users->email = $data->email;
   $users->password = $data->password;
 
-  // query products
-
-
+  // query users
   try{
     $stmt = $users->login();
     $num = $stmt->rowCount();
@@ -43,47 +40,27 @@ require_once $root . '\objects\JWT.php';
      $userId = $users->userdata->id;
      $users->userdata = json_encode($users->userdata);
 
+     //create token
+     $encodeJWT->userId = $userId;
+     $token = $encodeJWT->Encode();
 
-
-
-  // Create token header as a JSON string
-     $header = json_encode(['typ' => 'JWT', 'alg' => 'HS256']);
-
-  // Create token payload as a JSON string
-     $payload = json_encode(['user_id' => $userId]);
-
-  // Encode Header to Base64Url String
-     $base64UrlHeader = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($header));
-
-  // Encode Payload to Base64Url String
-     $base64UrlPayload = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($payload));
-
-  // Create Signature Hash
-     $signature = hash_hmac('sha256', $base64UrlHeader . "." . $base64UrlPayload, 'abC123!', true);
-
-  // Encode Signature to Base64Url String
-     $base64UrlSignature = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($signature));
-
-  // Create JWT
-     $jwt = $base64UrlHeader . "." . $base64UrlPayload . "." . $base64UrlSignature;
-
-         //echo $jwt;
-
-     echo '{"user": ' .$users->userdata .',"token": "' .$jwt. '"}';
+     echo '{';
+     echo '"message": "success","error": null,"data": {"user": ' .$users->userdata .' }, "token": "' . $token . '"';
+     echo '}';
 
    } else {
-     echo '{"error":{"text":"Bad request wrong username and password"}}';
+     echo '{';
+     echo '"message": "Unable to log in.", "error": "error","data":null';
+     echo '}';
    }
+
 
  }
  catch(PDOException $e) {
   echo '{"error":{"text":'. $e->getMessage() .'}}';
 }
 
-$encodedJWT = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMiJ9.ppAc_KRukLqkHhji-kBm2BKAn0eM8S0hcKncWxUKd2I';
-$secret = 'abC123!';
-$decodedJWT = JWT::decode($encodedJWT, $secret);
 
-print_r($decodedJWT);
 
 ?>
+
