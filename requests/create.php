@@ -28,7 +28,8 @@ $requests->address = $data->address;
 $requests->due_date = $data->due_date;
 $requests->content = $data->content;
 $requests->status = "open";
-$requests->created = date('Y-m-d H:i:s');
+//$requests->created = date('Y-m-d H:i:s');
+$requests->created = $data->created;
 
 
 
