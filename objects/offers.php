@@ -75,23 +75,19 @@ class Offers{
 
     // select all query
     $query = "SELECT 
-    u.name, 
-    r.title, 
-    r.id, 
-    r.address, 
-    r.due_date, 
-    r.content, 
-    r.status, 
-    r.created, 
-    r.modified 
+    r.id as request_id,
+    u.name as name,
+    u.user_name as user_name,
+    o.created, 
+    o.content, 
+    o.user_id, 
+    o.id as offer_id
     FROM 
-    " . $this->table_name . " r 
-    LEFT JOIN 
-    users u 
-    ON 
-    r.user_id = u.id
+    " . $this->table_name . " o
+    LEFT JOIN requests r ON r.id = o.request_id
+    LEFT JOIN users u ON o.user_id = u.id 
     ORDER BY
-    r.created DESC";
+    o.created";
 
     // prepare query statement
     $stmt = $this->conn->prepare($query);
@@ -111,7 +107,7 @@ class Offers{
 // used when filling up the update product form
 function readOne(){
 
-    // query to read single record
+    // query to read single z
     $query = "SELECT
     c.name as category_name, p.id, p.name, p.description, p.category_id, p.created
     FROM

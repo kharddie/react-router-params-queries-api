@@ -18,19 +18,12 @@ $db = $database->getConnection();
 $requests = new Requests($db);
 $decodeJWT = new encodeDecodeJWT($db);
 
-
-
-//get token from headers
-$token = explode(" ", apache_request_headers()["Authorization"]);
-$decodeJWT->encodedJWT =  $token[1];  
-//print_r($decodeJWT->encodedJWT);
-
 //validate token
 $decodeJWT->Decode();
 
 //echo $decodeJWT->Decode();
 
-if($decodeJWT->Decode() == "Passed"){
+if($decodeJWT->Decode()->data == "Passed"){
 
     // query requests
     $stmt = $requests->read();

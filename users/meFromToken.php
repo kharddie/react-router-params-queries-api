@@ -11,27 +11,21 @@
   include_once '../objects/users.php';
   include_once '../objects/encodeDecodeJWT.php';
 
-
-
-
   // instantiate database and product object
   $database = new Database();
   $db = $database->getConnection();
 
   // initialize object
   $users = new Users($db);
-  $encodeJWT = new encodeDecodeJWT($db);
-  // get posted data
-  $data = json_decode(file_get_contents("php://input"));
+  $decodeJWT = new encodeDecodeJWT($db);
 
-  // set usres property values
-
-  $users->username = $data->username;
-  $users->password = $data->password;
+  //decode token and get user id and the token
+  $users->user_id_from_token = $decodeJWT->Decode()->user_id_from_token;
+  $token = $decodeJWT->Decode()->token;
 
   // query users
   try{
-    $stmt = $users->login();
+    $stmt = $users->MeFromToken();
     $num = $stmt->rowCount();
 
     $users->userdata = $stmt->fetch(PDO::FETCH_OBJ);
@@ -40,17 +34,13 @@
      $userId = $users->userdata->id;
      $users->userdata = json_encode($users->userdata);
 
-     //create token
-     $encodeJWT->userId = $userId;
-     $token = $encodeJWT->Encode();
-
      echo '{';
      echo '"message": "success","error": null,"data": {"user": ' .$users->userdata .' }, "token": "' . $token . '"';
      echo '}';
 
    } else {
      echo '{';
-     echo '"message": "Unable to log in. Password or Email incorrect.", "error": "error","data":null';
+     echo '"message": "Unable to log in.", "error": "error","data":null';
      echo '}';
    }
 
