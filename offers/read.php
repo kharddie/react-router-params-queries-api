@@ -21,6 +21,13 @@ $decodeJWT = new encodeDecodeJWT($db);
 //validate token
 $decodeJWT->Decode();
 
+if (isset($_GET['rid'])) {
+    $offers->request_id = $_GET['rid'];
+
+} else {
+    $offers->request_id = 0;
+}
+
 //echo $decodeJWT->Decode();
 
 if($decodeJWT->Decode()->data == "Passed"){
@@ -51,26 +58,25 @@ if($decodeJWT->Decode()->data == "Passed"){
                 "user_name" => $user_name,
                 "created" => $created,
                 "user_id" => $user_id,
-                "content" => html_entity_decode($content),
                 "created" => $created
             );
 
             array_push($offers_arr["data"], $offers_item);
         }
-
+        $comments_arr["message"] = "success";
         echo json_encode($offers_arr);
     }
 
     else{
-        echo json_encode(
-            array("message" => "No requests found.")
-        );
+        echo  '{' ;
+        echo ' "data": [], "message" :"No offers found." '; 
+        echo  '}' ;
     }
 
 }else{
-    echo json_encode(
-        array("message" => "Token failed.")
-    );
+    echo  '{' ;
+    echo ' "data": [], "message" :"Token failed." '; 
+    echo  '}' ;
 
 }
 

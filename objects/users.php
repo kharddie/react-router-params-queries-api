@@ -46,7 +46,7 @@ class Users{
         //select all data
 
         $query = "SELECT
-        id, name,user_name, email
+        id,name,user_name, email,contact_number
         FROM
         " . $this->table_name . "
         WHERE

@@ -32,7 +32,7 @@ $offers->created = "win5";
 $offers->user_id = $data->user_id;
 $offers->request_id= $data->request_id;
 $offers->message_id = '';
-$offers->content = $data->content;
+$offers->contact_number = $data->contact_number;
 $offers->created = $data->created;
 
 $offers->modified = date('Y-m-d H:i:s');;

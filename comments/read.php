@@ -7,7 +7,7 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 
 // include database and object files
 include_once '../config/database.php';
-include_once '../objects/requests.php';
+include_once '../objects/comments.php';
 include_once '../objects/encodeDecodeJWT.php';
 
 // instantiate database and product object
@@ -15,26 +15,33 @@ $database = new Database();
 $db = $database->getConnection();
 
 // initialize object
-$requests = new Requests($db);
+$comments = new Comments($db);
 $decodeJWT = new encodeDecodeJWT($db);
 
 //validate token
-//$decodeJWT->Decode();
+$decodeJWT->Decode();
+
+if (isset($_GET['rid'])) {
+    $comments->request_id = $_GET['rid'];
+
+} else {
+    $comments->request_id = 0;
+}
 
 //echo $decodeJWT->Decode();
 
-//if($decodeJWT->Decode()->data == "Passed"){
+if($decodeJWT->Decode()->data == "Passed"){
 
-    // query requests
-    $stmt = $requests->read();
+    // query comments
+    $stmt = $comments->read();
     $num = $stmt->rowCount();
 
 // check if more than 0 record found
     if($num>0){
 
-    // requests array
-        $requests_arr=array();
-        $requests_arr["data"]=array();
+    // comments array
+        $comments_arr=array();
+        $comments_arr["data"]=array();
 
     // retrieve our table contents
     // fetch() is faster than fetchAll()
@@ -45,37 +52,37 @@ $decodeJWT = new encodeDecodeJWT($db);
         // just $name only
             extract($row);
 
-            $requests_item=array(
+            $comments_item=array(
                 "id" => $id,
                 "name" => $name,
-                "title" => $title,
-                "address" => $address,
-                "status" => $status,
-                "modified" => $modified,
+                "user_name" => $user_name,
+                "created" => $created,
                 "content" => html_entity_decode($content),
-                "due_date" => $due_date,
-
-                "created" => $created
+                "request_id" => $request_id,
             );
 
-            array_push($requests_arr["data"], $requests_item);
+            array_push($comments_arr["data"], $comments_item);
         }
 
-        echo json_encode($requests_arr);
+        $comments_arr["message"] = "success";
+        echo json_encode($comments_arr);
     }
 
     else{
-        echo json_encode(
-            array("message" => "No requests found.")
-        );
+
+        echo  '{' ;
+        echo ' "data": [], "message" :"No comments found." '; 
+        echo  '}' ;
+
+
     }
-/*
+
 }else{
-    echo json_encode(
-        array("message" => "Token failed.")
-    );
+
+    echo  '{' ;
+    echo ' "data": [], "message" :"Token failed." '; 
+    echo  '}' ;
 
 }
-*/
 
 ?>

@@ -17,61 +17,112 @@ class Offers{
     public $due_date;
     public $modified;
     public $status;
+    public $request_id;
+    public $contact_number;
 
 
-// create request
+
     function create(){
 
-    // query to insert record
-        $query = "INSERT INTO
-        " . $this->table_name . "
-        SET
-        user_id=:user_id,
-        request_id=:request_id,
-        message_id=:message_id,
-        content=:content,
-        created=:created,
-        modified=:modified";
+        $query1 = "
+        SELECT 
+        user_id 
+        FROM 
+        `offers` 
+        WHERE 
+        request_id = ". $this->request_id."
+        AND
+        user_id = ". $this->user_id
+        ;
+
+    // prepare query statement
+        $stmt = $this->conn->prepare($query1);
+
+    // execute query
+        $stmt->execute();
+        $num = $stmt->rowCount();
+
+    // check if more than 0 record found
+        if($num > 0) {
+         echo '{';
+         echo '"message": '.$this->request_id.' "You have already offered to help out with this request.", "error": "error","data":null';
+         echo '}';
+         exit();
+     }
+
+     $query = "INSERT INTO
+     " . $this->table_name . "
+     SET
+     user_id=:user_id,
+     request_id=:request_id,
+     created=:created,
+     modified=:modified";
 
     // prepare query
-        $stmt = $this->conn->prepare($query);
+     $stmt = $this->conn->prepare($query);
 
     // sanitize
-        $this->user_id=htmlspecialchars(strip_tags($this->user_id));
-        $this->request_id=htmlspecialchars(strip_tags($this->request_id));
-        $this->message_id=htmlspecialchars(strip_tags($this->message_id));
-        $this->content=htmlspecialchars(strip_tags($this->content));
-        $this->created=htmlspecialchars(strip_tags($this->created));
-        $this->modified=htmlspecialchars(strip_tags($this->modified));
+     $this->user_id=htmlspecialchars(strip_tags($this->user_id));
+     $this->request_id=htmlspecialchars(strip_tags($this->request_id));
+     $this->created=htmlspecialchars(strip_tags($this->created));
+     $this->modified=htmlspecialchars(strip_tags($this->modified));
 
     // bind values
-        $stmt->bindParam(":user_id", $this->user_id);
-        $stmt->bindParam(":request_id", $this->request_id);
-        $stmt->bindParam(":message_id", $this->message_id);
-        $stmt->bindParam(":content", $this->content);
-        $stmt->bindParam(":created", $this->created);
-        $stmt->bindParam(":modified", $this->modified); 
+     $stmt->bindParam(":user_id", $this->user_id);
+     $stmt->bindParam(":request_id", $this->request_id);
+     $stmt->bindParam(":created", $this->created);
+     $stmt->bindParam(":modified", $this->modified); 
 
        // echo $query;
 
     // execute query
-        try{
-            if($stmt->execute()){
+     try{
 
-                $this->lastInsertId = $this->conn->lastInsertId();
-                return true;
-            }else{
-                return false;
-            }
+        if($stmt->execute()){
 
-        } catch(PDOException $e) {
-          echo '{"error":{"text":'. $e->getMessage() .'}}';
-      }
-  }
+            //update users set phone number
+
+            $query = "UPDATE
+            `users`
+            SET
+            `contact_number` = :contact_number
+            WHERE
+            id = :user_id";
+
+
+    // prepare query statement
+            $stmt = $this->conn->prepare($query);
+
+    // sanitize
+            $this->contact_number=htmlspecialchars(strip_tags($this->contact_number));
+            $this->user_id=htmlspecialchars(strip_tags($this->user_id));
+
+    // bind new values
+            $stmt->bindParam(':contact_number', $this->contact_number);
+            $stmt->bindParam(':user_id', $this->user_id);
+
+    // execute the query
+            if(!$stmt->execute()){
+             echo '{';
+             echo '"message": '.$this->user_id.' "Failed to update users table.", "error": "error","data":null';
+             echo '}';
+             exit();
+         }
+
+         $this->lastInsertId = $this->conn->lastInsertId();
+         return true;
+     }else{
+        return false;
+    }
+
+} catch(PDOException $e) {
+  echo '{"error":{"text":'. $e->getMessage() .'}}';
+}
+}
 
 
 // read request
-  function read(){
+function read(){
 
     // select all query
     $query = "SELECT 
@@ -79,13 +130,13 @@ class Offers{
     u.name as name,
     u.user_name as user_name,
     o.created, 
-    o.content, 
     o.user_id, 
     o.id as offer_id
     FROM 
     " . $this->table_name . " o
     LEFT JOIN requests r ON r.id = o.request_id
     LEFT JOIN users u ON o.user_id = u.id 
+    WHERE o.request_id = ".$this->request_id."
     ORDER BY
     o.created";
 
