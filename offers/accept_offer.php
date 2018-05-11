@@ -31,16 +31,15 @@ $offers->created = "win5";
 
 $offers->user_id = $data->user_id;
 $offers->request_id= $data->request_id;
-$offers->message_id = '';
-$offers->contact_number = $data->contact_number;
+$offers->offer_id = $data->offer_id;
+$offers->request_user_Id = $data->request_user_Id;
 $offers->created = $data->created;
-
-$offers->modified = date('Y-m-d H:i:s');;
+$offers->modified = date('Y-m-d H:i:s');
 
 // query the offers
-if($offers->create()){
+if($offers->accept()){
      echo '{';
-     echo '  "message": "Your offer has been successfully posted","error": null,"data": {"id": ' .$offers->lastInsertId .' } ';
+     echo '  "message": "You have accepted this offer.Please check your email address for details.","error": null,"data": {"id": ' .$offers->lastInsertId .',"offer_id": ' .$offers->offer_id .',"request_id": ' .$offers->request_id .' } ';
      echo '}';
 
    } 

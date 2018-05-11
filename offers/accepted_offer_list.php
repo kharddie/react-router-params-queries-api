@@ -7,7 +7,7 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 
 // include database and object files
 include_once '../config/database.php';
-include_once '../objects/comments.php';
+include_once '../objects/offers.php';
 include_once '../objects/encodeDecodeJWT.php';
 
 // instantiate database and product object
@@ -15,17 +15,17 @@ $database = new Database();
 $db = $database->getConnection();
 
 // initialize object
-$comments = new Comments($db);
+$offers = new Offers($db);
 $decodeJWT = new encodeDecodeJWT($db);
 
 //validate token
 //$decodeJWT->Decode();
 
 if (isset($_GET['rid'])) {
-    $comments->request_id = $_GET['rid'];
+    $offers->request_id = $_GET['rid'];
 
 } else {
-    $comments->request_id = 0;
+    $offers->request_id = 0;
 }
 
 //echo $decodeJWT->Decode();
@@ -34,15 +34,17 @@ if (isset($_GET['rid'])) {
 //if($decodeJWT->Decode()->data == "Passed"){
 
     // query comments
-    $stmt = $comments->read();
+    $stmt = $offers->ReadAcceptedOffersList();
     $num = $stmt->rowCount();
+
+
 
 // check if more than 0 record found
     if($num>0){
 
-    // comments array
-        $comments_arr=array();
-        $comments_arr["data"]=array();
+    // offers array
+        $acceptedOffersList_arr=array();
+        $acceptedOffersList_arr["data"]=array();
 
     // retrieve our table contents
     // fetch() is faster than fetchAll()
@@ -53,20 +55,19 @@ if (isset($_GET['rid'])) {
         // just $name only
             extract($row);
 
-            $comments_item=array(
+            $acceptedOffersList_arr_item=array(
                 "id" => $id,
-                "name" => $name,
-                "user_name" => $user_name,
-                "created" => $created,
-                "content" => nl2br(htmlspecialchars($content)),
+                "user_id," => $user_id,
+                "offer_id" => $offer_id,
                 "request_id" => $request_id,
+                "created" => $created,
             );
 
-            array_push($comments_arr["data"], $comments_item);
+            array_push($acceptedOffersList_arr["data"], $acceptedOffersList_arr_item);
         }
 
-        $comments_arr["message"] = "success";
-        echo json_encode($comments_arr);
+        $acceptedOffersList_arr_item["message"] = "success";
+        echo json_encode($acceptedOffersList_arr);
     }
 
     else{

@@ -18,6 +18,13 @@ $db = $database->getConnection();
 $requests = new Requests($db);
 $decodeJWT = new encodeDecodeJWT($db);
 
+if (isset($_GET['uid'])) {
+    $requests->requests_uid = $_GET['uid'];
+
+} else {
+    $requests->requests_uid = '';
+}
+
 //validate token
 //$decodeJWT->Decode();
 
@@ -26,49 +33,52 @@ $decodeJWT = new encodeDecodeJWT($db);
 //if($decodeJWT->Decode()->data == "Passed"){
 
     // query requests
-    $stmt = $requests->read();
-    $num = $stmt->rowCount();
+$stmt = $requests->read();
+$num = $stmt->rowCount();
 
 // check if more than 0 record found
-    if($num>0){
+if($num>0){
 
     // requests array
-        $requests_arr=array();
-        $requests_arr["data"]=array();
+    $requests_arr=array();
+    $requests_arr["data"]=array();
 
     // retrieve our table contents
     // fetch() is faster than fetchAll()
     // http://stackoverflow.com/questions/2770630/pdofetchall-vs-pdofetch-in-a-loop
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
         // extract row
         // this will make $row['name'] to
         // just $name only
-            extract($row);
+        extract($row);
 
-            $requests_item=array(
-                "id" => $id,
-                "name" => $name,
-                "title" => $title,
-                "address" => $address,
-                "status" => $status,
-                "modified" => $modified,
-                "content" => html_entity_decode($content),
-                "due_date" => $due_date,
+        $requests_item=array(
+            "id" => $id,
+            "name" => $name,
+            "user_id" => $user_id,
+            "title" => $title,
+            "address" => $address,
+            "status" => $status,
+            "modified" => $modified,
+            "content" => nl2br(htmlspecialchars($content)),
+            "due_date" => $due_date,
 
-                "created" => $created
-            );
-
-            array_push($requests_arr["data"], $requests_item);
-        }
-
-        echo json_encode($requests_arr);
-    }
-
-    else{
-        echo json_encode(
-            array("message" => "No requests found.")
+            "created" => $created
         );
+
+        array_push($requests_arr["data"], $requests_item);
     }
+
+        $comments_arr["message"] = "success";
+        $comments_arr["error"] = "null";
+    echo json_encode($requests_arr);
+}
+
+else{
+    echo  '{' ;
+    echo ' "data": [], "message" :"You currently have no requets to display.", "error" :"error" '; 
+    echo  '}' ;
+}
 /*
 }else{
     echo json_encode(

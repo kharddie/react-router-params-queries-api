@@ -4,16 +4,23 @@ class Users{
     // database connection and table name
     private $conn;
     private $table_name = "users";
+    private $queryUser="id,name,user_name, email,contact_number,address";
     // object properties
     public $id;
     public $name;
     public $email;
     public $password;
+    public $confirmPassword;
     public $created;
     public $lastInsertId;
     public $userdata;
     public $user_name;
     public $user_id_from_token;
+    public $address;
+    public $contact_number;
+    public $token;
+    public $userId;
+
     public function __construct($db){
         $this->conn = $db;
     }
@@ -22,7 +29,8 @@ class Users{
     function MeFromToken(){
 
         $query = "SELECT
-        id,name,user_name, email,contact_number
+        ".$this->queryUser."
+        
         FROM
         " . $this->table_name . "
         WHERE
@@ -46,7 +54,7 @@ class Users{
         //select all data
 
         $query = "SELECT
-        id,name,user_name, email,contact_number
+        ".$this->queryUser."
         FROM
         " . $this->table_name . "
         WHERE
@@ -153,7 +161,9 @@ class Users{
         SET
         name = :name,
         user_name = :user_name,
-        email = :email
+        email = :email,
+        address = :address,
+        contact_number = :contact_number
         WHERE
         id = :id";
 
@@ -165,22 +175,149 @@ class Users{
         $this->user_name=htmlspecialchars(strip_tags($this->user_name));
         $this->email=htmlspecialchars(strip_tags($this->email));
         $this->id=htmlspecialchars(strip_tags($this->id));
+        $this->address=htmlspecialchars(strip_tags($this->address));
+        $this->contact_number=htmlspecialchars(strip_tags($this->contact_number));
 
     // bind new values
         $stmt->bindParam(':name', $this->name);
         $stmt->bindParam(':user_name', $this->user_name);
         $stmt->bindParam(':email', $this->email);
         $stmt->bindParam(':id', $this->id);
+        $stmt->bindParam(':address', $this->address);
+        $stmt->bindParam(':contact_number', $this->contact_number);
+
+        //echo $query;
 
     // execute the query
-        if($stmt->execute()){
-       // = 'table='. $this->table_name. '--id='. $this->id. '--name='. $this->name;
-        // return $this->query;
+        if($stmt->execute()){         
             return true;
         }
-
         return false;
     }
+
+
+
+     // for forgot password
+    function UpdateUsertableToken(){
+
+    // update query
+        $query = "UPDATE
+        " . $this->table_name . "
+        SET
+        token = :token
+        WHERE
+        id = :userId";
+
+    // prepare query statement
+        $stmt = $this->conn->prepare($query);
+
+    // sanitize
+        $this->token=htmlspecialchars(strip_tags($this->token));
+        $this->userId=htmlspecialchars(strip_tags($this->userId));
+
+
+    // bind new values
+        $stmt->bindParam(':token', $this->token);
+        $stmt->bindParam(':userId', $this->userId);
+
+        //echo $query;
+
+    // execute the query
+        if($stmt->execute()){         
+            return true;
+        }
+        echo '{';
+        echo '  "message": "Could not update user table","error": null,"data": null';
+        echo '}';
+
+        exit();
+    }
+
+
+    function ResetPwd(){
+
+    // update query
+        $query = "UPDATE
+        " . $this->table_name . "
+        SET
+        password = :password
+        WHERE
+        id = :userId";
+
+    // prepare query statement
+        $stmt = $this->conn->prepare($query);
+
+    // sanitize
+        $this->token=htmlspecialchars(strip_tags($this->token));
+        $this->userId=htmlspecialchars(strip_tags($this->userId));
+
+
+    // bind new values
+        $stmt->bindParam(':token', $this->token);
+        $stmt->bindParam(':userId', $this->userId);
+
+        //echo $query;
+
+    // execute the query
+        if($stmt->execute()){         
+            return true;
+        }
+        echo '{';
+        echo '  "message": "Could not update user table","error": null,"data": null';
+        echo '}';
+
+        exit();
+    }
+
+
+    // update th password
+    function UpdateProfilePwd(){
+
+    // update query
+        $query = "UPDATE
+        `users`
+        SET
+        password = :password
+        WHERE
+        id = :userId";
+
+    // prepare query statement
+        $stmt = $this->conn->prepare($query);
+
+        //echo "password to be hashed=".$this->confirmPassword;
+
+        $this->confirmPassword = hash('sha256',$this->confirmPassword); 
+
+    // sanitize
+        $this->userId=htmlspecialchars(strip_tags($this->userId));
+        $this->user_name=htmlspecialchars(strip_tags($this->user_name));
+
+    // bind new values
+        $stmt->bindParam(':userId', $this->userId);
+        $stmt->bindParam(':password', $this->confirmPassword);
+
+
+        //echo $query;
+
+    // execute the query
+        if($stmt->execute()){         
+            return true;
+        }
+        echo '{';
+        echo '  "message": "Could not update user table -- password","error": null,"data": null';
+        echo '}';
+
+        exit();
+    }
+
+
+
+
+
+
+
+
+
 
 }
 ?>

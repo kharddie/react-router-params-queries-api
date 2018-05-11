@@ -19,7 +19,7 @@ $offers = new Offers($db);
 $decodeJWT = new encodeDecodeJWT($db);
 
 //validate token
-$decodeJWT->Decode();
+//$decodeJWT->Decode();
 
 if (isset($_GET['rid'])) {
     $offers->request_id = $_GET['rid'];
@@ -30,7 +30,7 @@ if (isset($_GET['rid'])) {
 
 //echo $decodeJWT->Decode();
 
-if($decodeJWT->Decode()->data == "Passed"){
+//if($decodeJWT->Decode()->data == "Passed"){
 
     // query offers
     $stmt = $offers->read();
@@ -42,6 +42,7 @@ if($decodeJWT->Decode()->data == "Passed"){
     // offers array
         $offers_arr=array();
         $offers_arr["data"]=array();
+        $isOfferAccepted=null;
 
     // retrieve our table contents
     // fetch() is faster than fetchAll()
@@ -51,6 +52,11 @@ if($decodeJWT->Decode()->data == "Passed"){
         // this will make $row['name'] to
         // just $name only
             extract($row);
+            if($whos_accepted_this !='' ) {
+                $isOfferAccepted =true;
+            }else{
+                $isOfferAccepted =false;
+            }
 
             $offers_item=array(
                 "request_id" => $request_id,
@@ -58,7 +64,11 @@ if($decodeJWT->Decode()->data == "Passed"){
                 "user_name" => $user_name,
                 "created" => $created,
                 "user_id" => $user_id,
-                "created" => $created
+                "created" => $created,
+                "offer_id" => $offer_id,
+                "whos_accepted_this"=>$whos_accepted_this,
+                "isOfferAccepted"=>$isOfferAccepted
+                
             );
 
             array_push($offers_arr["data"], $offers_item);
@@ -72,12 +82,13 @@ if($decodeJWT->Decode()->data == "Passed"){
         echo ' "data": [], "message" :"No offers found." '; 
         echo  '}' ;
     }
-
+/*
 }else{
     echo  '{' ;
     echo ' "data": [], "message" :"Token failed." '; 
     echo  '}' ;
 
 }
+*/
 
 ?>

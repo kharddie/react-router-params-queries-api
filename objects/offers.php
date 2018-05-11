@@ -19,101 +19,221 @@ class Offers{
     public $status;
     public $request_id;
     public $contact_number;
+    public $offer_id;
+    public $request_user_Id;
+    public $request_user_Email;
+    public $user_name;
+
+    function accept(){
+
+//get the email user who issued the offer and there email address
 
 
 
-    function create(){
-
-        $query1 = "
+        $query = "
         SELECT 
-        user_id 
+        email 
         FROM 
-        `offers` 
+        `users` 
         WHERE 
-        request_id = ". $this->request_id."
-        AND
-        user_id = ". $this->user_id
-        ;
+        $this->user_id = id";
 
     // prepare query statement
-        $stmt = $this->conn->prepare($query1);
+        $stmt = $this->conn->prepare($query);
 
     // execute query
         $stmt->execute();
-        $num = $stmt->rowCount();
 
-    // check if more than 0 record found
-        if($num > 0) {
-         echo '{';
-         echo '"message": '.$this->request_id.' "You have already offered to help out with this request.", "error": "error","data":null';
-         echo '}';
-         exit();
-     }
+     // get retrieved row
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-     $query = "INSERT INTO
-     " . $this->table_name . "
-     SET
-     user_id=:user_id,
-     request_id=:request_id,
-     created=:created,
-     modified=:modified";
+    // set values to object properties
+        $this->request_user_Email = $row['email'];
+
+
+//create the accepted offer
+
+        $query = "INSERT INTO
+        `accepted_offers`
+        SET
+        user_id=:user_id,
+        offer_id=:offer_id,
+        request_id=:request_id,
+        created=:created,
+        modified=:modified";
 
     // prepare query
-     $stmt = $this->conn->prepare($query);
+        $stmt = $this->conn->prepare($query);
 
     // sanitize
-     $this->user_id=htmlspecialchars(strip_tags($this->user_id));
-     $this->request_id=htmlspecialchars(strip_tags($this->request_id));
-     $this->created=htmlspecialchars(strip_tags($this->created));
-     $this->modified=htmlspecialchars(strip_tags($this->modified));
+        $this->user_id=htmlspecialchars(strip_tags($this->user_id));
+        $this->offer_id=htmlspecialchars(strip_tags($this->offer_id));
+        $this->request_id=htmlspecialchars(strip_tags($this->request_id));
+        $this->created=htmlspecialchars(strip_tags($this->created));
+        $this->modified=htmlspecialchars(strip_tags($this->modified));
 
     // bind values
-     $stmt->bindParam(":user_id", $this->user_id);
-     $stmt->bindParam(":request_id", $this->request_id);
-     $stmt->bindParam(":created", $this->created);
-     $stmt->bindParam(":modified", $this->modified); 
+        $stmt->bindParam(":user_id", $this->user_id);
+        $stmt->bindParam(":offer_id", $this->offer_id);
+        $stmt->bindParam(":request_id", $this->request_id);
+        $stmt->bindParam(":created", $this->created);
+        $stmt->bindParam(":modified", $this->modified); 
 
        // echo $query;
 
     // execute query
-     try{
 
-        if($stmt->execute()){
+        if($this->user_id !='' && $this->offer_id !='' && $this->request_id !='' && $this->created !=''){
+
+            if($stmt->execute()){
+
+         //alter the status of the request
+             $status="Assigned";
+
+             $query = "UPDATE
+             `requests`
+             SET
+             status = :status
+
+             WHERE
+             user_id = :user_id";
+
+             $stmt2 = $this->conn->prepare($query);
+
+             $status=htmlspecialchars($status);
+             $this->user_id=htmlspecialchars(strip_tags($this->user_id));
+
+             $stmt2->bindParam(':status', $status);
+             $stmt2->bindParam(':user_id', $this->user_id);
+
+             if($stmt2->execute()){
+                // return true;
+             }else{
+                 echo '{';
+                 echo '  "message": "Could not alter the status of the request table","error": null,"data": null';
+                 echo '}';
+
+                 exit();
+            // return false;
+             }
+
+             $this->lastInsertId = $this->conn->lastInsertId();
+             return true;
+         }else{
+            return false;
+        }
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function create(){
+
+    $query1 = "
+    SELECT 
+    user_id 
+    FROM 
+    `offers` 
+    WHERE 
+    request_id = ". $this->request_id."
+    AND
+    user_id = ". $this->user_id
+    ;
+
+    // prepare query statement
+    $stmt = $this->conn->prepare($query1);
+
+    // execute query
+    $stmt->execute();
+    $num = $stmt->rowCount();
+
+    // check if more than 0 record found
+    if($num > 0) {
+
+       echo '{';
+       echo '  "message": "You have already offered to help out with this request","error": null,"data": null';
+       echo '}';
+
+       exit();
+   }
+
+   $query = "INSERT INTO
+   " . $this->table_name . "
+   SET
+   user_id=:user_id,
+   request_id=:request_id,
+   created=:created,
+   modified=:modified";
+
+    // prepare query
+   $stmt = $this->conn->prepare($query);
+
+    // sanitize
+   $this->user_id=htmlspecialchars(strip_tags($this->user_id));
+   $this->request_id=htmlspecialchars(strip_tags($this->request_id));
+   $this->created=htmlspecialchars(strip_tags($this->created));
+   $this->modified=htmlspecialchars(strip_tags($this->modified));
+
+    // bind values
+   $stmt->bindParam(":user_id", $this->user_id);
+   $stmt->bindParam(":request_id", $this->request_id);
+   $stmt->bindParam(":created", $this->created);
+   $stmt->bindParam(":modified", $this->modified); 
+
+       // echo $query;
+
+    // execute query
+   try{
+
+    if($stmt->execute() && $this->user_id != '' && $this->request_id != '' && $this->created != '' ){
 
             //update users set phone number
 
-            $query = "UPDATE
-            `users`
-            SET
-            `contact_number` = :contact_number
-            WHERE
-            id = :user_id";
+        $query = "UPDATE
+        `users`
+        SET
+        `contact_number` = :contact_number
+        WHERE
+        id = :user_id";
 
 
     // prepare query statement
-            $stmt = $this->conn->prepare($query);
+        $stmt = $this->conn->prepare($query);
 
     // sanitize
-            $this->contact_number=htmlspecialchars(strip_tags($this->contact_number));
-            $this->user_id=htmlspecialchars(strip_tags($this->user_id));
+        $this->contact_number=htmlspecialchars(strip_tags($this->contact_number));
+        $this->user_id=htmlspecialchars(strip_tags($this->user_id));
 
     // bind new values
-            $stmt->bindParam(':contact_number', $this->contact_number);
-            $stmt->bindParam(':user_id', $this->user_id);
+        $stmt->bindParam(':contact_number', $this->contact_number);
+        $stmt->bindParam(':user_id', $this->user_id);
 
     // execute the query
-            if(!$stmt->execute()){
-             echo '{';
-             echo '"message": '.$this->user_id.' "Failed to update users table.", "error": "error","data":null';
-             echo '}';
-             exit();
-         }
+        if(!$stmt->execute()){
+           echo '{';
+           echo '"message": '.$this->user_id.' "Failed to update users table.", "error": "error","data":null';
+           echo '}';
+           exit();
+       }
 
-         $this->lastInsertId = $this->conn->lastInsertId();
-         return true;
-     }else{
-        return false;
-    }
+       $this->lastInsertId = $this->conn->lastInsertId();
+       return true;
+   }else{
+    return false;
+}
 
 } catch(PDOException $e) {
   echo '{"error":{"text":'. $e->getMessage() .'}}';
@@ -131,11 +251,13 @@ function read(){
     u.user_name as user_name,
     o.created, 
     o.user_id, 
-    o.id as offer_id
+    o.id as offer_id,
+    x.user_id as whos_accepted_this
     FROM 
     " . $this->table_name . " o
     LEFT JOIN requests r ON r.id = o.request_id
-    LEFT JOIN users u ON o.user_id = u.id 
+    LEFT JOIN users u ON o.user_id = u.id
+    LEFT JOIN accepted_offers x ON o.id = x.offer_id 
     WHERE o.request_id = ".$this->request_id."
     ORDER BY
     o.created";
@@ -148,6 +270,33 @@ function read(){
 
     return $stmt;
 }
+
+
+function ReadAcceptedOffersList(){
+
+    // select all query
+    $query = "SELECT 
+    id,
+    user_id,
+    offer_id,
+    request_id,
+    created 
+
+    FROM 
+    `accepted_offers`
+
+    ORDER BY
+    created";
+
+    // prepare query statement
+    $stmt = $this->conn->prepare($query);
+
+    // execute query
+    $stmt->execute();
+
+    return $stmt;
+}
+
 
 
 

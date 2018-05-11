@@ -20,7 +20,8 @@
 
   // initialize object
   $users = new Users($db);
-  $encodeJWT = new encodeDecodeJWT($db);
+  $tokenString = "";
+  $encodeJWT = new encodeDecodeJWT($db,$tokenString);
   // get posted data
   $data = json_decode(file_get_contents("php://input"));
 

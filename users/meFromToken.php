@@ -17,11 +17,26 @@
 
   // initialize object
   $users = new Users($db);
-  $decodeJWT = new encodeDecodeJWT($db);
+  $tokenString = '';
+  $decodeJWT = new encodeDecodeJWT($db,$tokenString);
 
-  //decode token and get user id and the token
-  $users->user_id_from_token = $decodeJWT->Decode()->user_id_from_token;
-  $token = $decodeJWT->Decode()->token;
+    // get token from headers check if its a guest user
+  $token = explode(" ", apache_request_headers()["Authorization"]);
+  $token =  $token[1]; 
+
+//check for guest user
+  if($token === "undefined"){
+    //echo "token=". $token;
+      //decode token and get user id and the token
+    $users->user_id_from_token = 0;
+  }else{
+       //decode token and get user id and the token
+    $users->user_id_from_token = $decodeJWT->Decode()->user_id_from_token;
+    $token = $decodeJWT->Decode()->token;   
+  }
+
+
+
 
   // query users
   try{
@@ -40,7 +55,7 @@
 
    } else {
      echo '{';
-     echo '"message": "Unable to log in.", "error": "error","data":null';
+     echo '"message": "You are either a guest user or you need to log in.", "error": "error","data":null';
      echo '}';
    }
 

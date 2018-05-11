@@ -5,6 +5,7 @@ class EncodeDecodeJWT{
 
     // database connection and table name
   private $conn;
+  private $tokenString;
   private $table_name = "users";
   private $secret ='abC123!';
   private $root;
@@ -18,9 +19,10 @@ class EncodeDecodeJWT{
   public $token;
   public $userdata;
 
-  public function __construct($db) {
+  public function __construct($db,$tokenString) {
 
     $this->conn = $db;
+    $this->tokenString = $tokenString;
     $this->root = realpath(dirname(dirname(__FILE__)));
     require_once $this->root . '/objects/JWT.php';
   }
@@ -31,43 +33,52 @@ class EncodeDecodeJWT{
     $this->token = explode(" ", apache_request_headers()["Authorization"]);
     $this->encodedJWT =  $this->token[1];  
     //print_r ("token from token =" .$this->encodedJWT);
+    //print_r ("xxxxxxxxxxxx===".$this->tokenString);
+
 
     //decode the token
-    $res = JWT::decode($this->encodedJWT, $this->secret);
+    if($this->tokenString !=''){
+      $res = JWT::decode($this->tokenString, $this->secret);
+    }else{
+
+      $res = JWT::decode($this->encodedJWT, $this->secret);
+    }
+
+
 
     //pass the user id to $this->user_id_from_token
-    $this->user_id_from_token = $res->user_id;
+  $this->user_id_from_token = $res->user_id;
     //print_r ("id from token =" .$this->user_id_from_token);
 
-    $query = "SELECT id, name FROM `". $this->table_name ."` WHERE id = " .  $this->user_id_from_token;
+  $query = "SELECT id, name FROM `". $this->table_name ."` WHERE id = " .  $this->user_id_from_token;
          // prepare query statement
-    $stmt = $this->conn->prepare($query);
+  $stmt = $this->conn->prepare($query);
     // execute query
-    $stmt->execute();
-    $num = $stmt->rowCount();
-    $this->userdata = $stmt->fetch(PDO::FETCH_OBJ);
+  $stmt->execute();
+  $num = $stmt->rowCount();
+  $this->userdata = $stmt->fetch(PDO::FETCH_OBJ);
 
-    $resObj = (object)[];
+  $resObj = (object)[];
 
-    if($this->userdata){
-     $userId = $this->userdata->id;
-     $userName = $this->userdata->name;
+  if($this->userdata){
+   $userId = $this->userdata->id;
+   $userName = $this->userdata->name;
 
      //echo "userId=".$userId. "  userName=".$userName;   
-     $resObj->data = "Passed";
-     $resObj->user_id_from_token = $this->user_id_from_token;
-     $resObj->token = $this->encodedJWT;
+   $resObj->data = "Passed";
+   $resObj->user_id_from_token = $this->user_id_from_token;
+   $resObj->token = $this->encodedJWT;
 
-     return ($resObj);
+   return ($resObj);
 
-  }else{
+ }else{
 
-     $resObj->data = "Failed";
-     $resObj->user_id_from_token = $this->user_id_from_token;
-     $resObj->token = $this->encodedJWT;
+   $resObj->data = "Failed";
+   $resObj->user_id_from_token = $this->user_id_from_token;
+   $resObj->token = $this->encodedJWT;
 
-    return $resObj;
-  }
+   return $resObj;
+ }
 
 }
 

@@ -25,7 +25,9 @@ $data = json_decode(file_get_contents("php://input"));
 $user->id = $data->id;
 $user->name = $data->name;
 $user->user_name = $data->user_name;
-$user->email = $data->email;
+$user->email = $data->email; 
+$user->address = $data->address;
+$user->contact_number = $data->contact_number; 
 $token = "";
 
 
@@ -33,8 +35,8 @@ $token = "";
 if($user->UpdateProfile()){
 
      echo '{';
-     echo '"message": "Profile was updated","error": null,"data": {"user": {"id":"'.$user->id.'","name":"'.$user->name.'","user_name":"'.$user->user_name.'",
-        "email":"'.$user->email.' "}}, "token": "' . $token . '"';
+     echo '"message": "Profile was updated","error": null,"data": {"user": {"id":"'.$user->id.'","name":"'.$user->name.'","user_name":"'.$user->user_name.' ","address":"'.$user->address.'",
+        "email":"'.$user->email.' ", "contact_number":"'.$user->contact_number.' "}}, "token": "' . $token . '"';
      echo '}';
 
 
