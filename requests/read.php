@@ -16,7 +16,8 @@ $db = $database->getConnection();
 
 // initialize object
 $requests = new Requests($db);
-$decodeJWT = new encodeDecodeJWT($db);
+$tokenString = '';
+$encodeJWT = new encodeDecodeJWT($db,$tokenString);
 
 if (isset($_GET['uid'])) {
     $requests->requests_uid = $_GET['uid'];
@@ -58,6 +59,10 @@ if($num>0){
             "user_id" => $user_id,
             "title" => $title,
             "address" => $address,
+
+            "lat" => $lat,
+            "lng" => $lng,
+
             "status" => $status,
             "modified" => $modified,
             "content" => nl2br(htmlspecialchars($content)),

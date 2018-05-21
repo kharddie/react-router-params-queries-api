@@ -16,7 +16,8 @@ $db = $database->getConnection();
 
 // initialize object
 $comments = new Comments($db);
-$decodeJWT = new encodeDecodeJWT($db);
+$tokenString = '';
+$encodeJWT = new encodeDecodeJWT($db,$tokenString);
 
 //validate token
 //$decodeJWT->Decode();

@@ -25,6 +25,10 @@ class Requests{
     public $status;
     public $requests_uid;
 
+    public $lat;
+    public $lng;
+
+
 // read request
     function read(){
 
@@ -44,6 +48,10 @@ class Requests{
         r.due_date, 
         r.content, 
         r.status, 
+
+        r.lat, 
+        r.lng, 
+
         r.created, 
         r.modified 
         FROM 
@@ -78,6 +86,8 @@ class Requests{
         due_date=:due_date,
         status=:status,
         title=:title,
+        lat=:lat,
+        lng=:lng,
         created=:created";
 
     // prepare query
@@ -90,7 +100,8 @@ class Requests{
         $this->content=htmlspecialchars(strip_tags($this->content));
        // $this->content=nl2br(htmlentities($this->content, ENT_QUOTES, 'UTF-8'));
         
-
+        $this->lat=htmlspecialchars(strip_tags($this->lat));
+        $this->lng=htmlspecialchars(strip_tags($this->lng));
 
 
         $this->title=htmlspecialchars(strip_tags($this->title));
@@ -102,6 +113,10 @@ class Requests{
         $stmt->bindParam(":id", $this->id);
         $stmt->bindParam(":address", $this->address);
         $stmt->bindParam(":content", $this->content);
+
+        $stmt->bindParam(":lat", $this->lat);
+        $stmt->bindParam(":lng", $this->lng);
+
         $stmt->bindParam(":due_date", $this->due_date);
         $stmt->bindParam(":title", $this->title);
         $stmt->bindParam(":status", $this->status);

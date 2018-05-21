@@ -223,7 +223,8 @@ class Users{
         //echo $query;
 
     // execute the query
-        if($stmt->execute()){         
+        if($stmt->execute()){ 
+        //echo "Updated Usertable with token Token==".$this->userId;        
             return true;
         }
         echo '{';
