@@ -21,12 +21,13 @@ $users = new Users($db);
 $data = json_decode(file_get_contents("php://input"));
 
 // set product property values
-$users->confirmPassword = $data->confirmPassword;
+//$tokenString = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMTE1In0.taQ_6EoTYgMM3V2ghAbri9ivfGMetn2RQ_BEmhjOk98";
 
 $tokenString = $data->token;
+$users->verified =1;
 
-//echo "password from user=".$data->confirmPassword."<br/>";
-//echo "token string from user=".$tokenString."<br/>";
+
+//echo "token string from website string=".$tokenString;
 
 // initialize object
 $decodeJWT = new encodeDecodeJWT($db,$tokenString);
@@ -37,9 +38,9 @@ $users->userId = $decodeJWT->Decode()->user_id_from_token;
 //echo $users->userId;
 if($decodeJWT->Decode()->data == "Passed"){
 // create the users
-  if($users->UpdateProfilePwd()){
+  if($users->UpdateProfileVerify()){
     echo '{';
-    echo '"message": "Your password has been successfully reset.","error": null,"data":{}';
+    echo '"message": "Your Account has been verified.","error": null,"data":{}';
     echo '}';
   }
 

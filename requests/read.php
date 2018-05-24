@@ -74,8 +74,8 @@ if($num>0){
         array_push($requests_arr["data"], $requests_item);
     }
 
-        $comments_arr["message"] = "success";
-        $comments_arr["error"] = "null";
+        $requests_arr["message"] = "success";
+        $requests_arr["error"] = null;
     echo json_encode($requests_arr);
 }
 

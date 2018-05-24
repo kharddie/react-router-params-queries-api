@@ -20,6 +20,7 @@ class Users{
     public $contact_number;
     public $token;
     public $userId;
+    public $verified;
 
     public function __construct($db){
         $this->conn = $db;
@@ -311,7 +312,41 @@ class Users{
         exit();
     }
 
+    // update the table verify account
+    function UpdateProfileVerify(){
 
+    // update query
+        $query = "UPDATE
+        `users`
+        SET
+        verified = :verified
+        WHERE
+        id = :userId";
+
+    // prepare query statement
+        $stmt = $this->conn->prepare($query);
+
+    // sanitize
+        $this->userId=htmlspecialchars(strip_tags($this->userId));
+        $this->verified=htmlspecialchars(strip_tags($this->verified));
+
+    // bind new values
+        $stmt->bindParam(':userId', $this->userId);
+        $stmt->bindParam(':verified', $this->verified);
+
+
+        //echo $query;
+
+    // execute the query
+        if($stmt->execute()){         
+            return true;
+        }
+        echo '{';
+        echo '  "message": "Could not update user table -- verify","error": null,"data": null';
+        echo '}';
+
+        exit();
+    }
 
 
 

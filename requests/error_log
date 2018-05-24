@@ -1,0 +1,18 @@
+[12-May-2018 03:45:38 UTC] PHP Fatal error:  Call to a member function prepare() on null in /home/kharddie/saidia.eastweb.com.au/api/objects/requests.php on line 60
+[12-May-2018 03:45:38 UTC] PHP Fatal error:  Call to a member function prepare() on null in /home/kharddie/saidia.eastweb.com.au/api/objects/requests.php on line 60
+[12-May-2018 03:45:38 UTC] PHP Fatal error:  Call to a member function prepare() on null in /home/kharddie/saidia.eastweb.com.au/api/objects/requests.php on line 60
+[12-May-2018 03:45:52 UTC] PHP Fatal error:  Call to a member function prepare() on null in /home/kharddie/saidia.eastweb.com.au/api/objects/requests.php on line 60
+[12-May-2018 03:46:25 UTC] PHP Fatal error:  Call to a member function prepare() on null in /home/kharddie/saidia.eastweb.com.au/api/objects/requests.php on line 60
+[12-May-2018 03:46:25 UTC] PHP Fatal error:  Call to a member function prepare() on null in /home/kharddie/saidia.eastweb.com.au/api/objects/requests.php on line 60
+[12-May-2018 03:46:25 UTC] PHP Fatal error:  Call to a member function prepare() on null in /home/kharddie/saidia.eastweb.com.au/api/objects/requests.php on line 60
+[12-May-2018 03:46:25 UTC] PHP Fatal error:  Call to a member function prepare() on null in /home/kharddie/saidia.eastweb.com.au/api/objects/requests.php on line 60
+[12-May-2018 03:46:25 UTC] PHP Fatal error:  Call to a member function prepare() on null in /home/kharddie/saidia.eastweb.com.au/api/objects/requests.php on line 60
+[12-May-2018 03:47:58 UTC] PHP Fatal error:  Call to a member function prepare() on null in /home/kharddie/saidia.eastweb.com.au/api/objects/requests.php on line 60
+[12-May-2018 03:55:07 UTC] PHP Parse error:  syntax error, unexpected '"' in /home/kharddie/saidia.eastweb.com.au/api/config/database.php on line 9
+[12-May-2018 03:55:07 UTC] PHP Parse error:  syntax error, unexpected '"' in /home/kharddie/saidia.eastweb.com.au/api/config/database.php on line 9
+[12-May-2018 03:55:35 UTC] PHP Parse error:  syntax error, unexpected '"' in /home/kharddie/saidia.eastweb.com.au/api/config/database.php on line 9
+[12-May-2018 03:55:35 UTC] PHP Parse error:  syntax error, unexpected '"' in /home/kharddie/saidia.eastweb.com.au/api/config/database.php on line 9
+[12-May-2018 03:56:27 UTC] PHP Parse error:  syntax error, unexpected '"' in /home/kharddie/saidia.eastweb.com.au/api/config/database.php on line 9
+[12-May-2018 03:56:27 UTC] PHP Parse error:  syntax error, unexpected '"' in /home/kharddie/saidia.eastweb.com.au/api/config/database.php on line 9
+[12-May-2018 03:58:08 UTC] PHP Parse error:  syntax error, unexpected '"' in /home/kharddie/saidia.eastweb.com.au/api/config/database.php on line 9
+[12-May-2018 03:58:17 UTC] PHP Parse error:  syntax error, unexpected '"' in /home/kharddie/saidia.eastweb.com.au/api/config/database.php on line 9
