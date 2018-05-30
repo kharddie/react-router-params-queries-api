@@ -6,31 +6,35 @@ header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
  
-// include database and object files
-include_once '../config/database.php';
-include_once '../objects/product.php';
- 
 // get database connection
+include_once '../config/database.php';
+ 
+// instantiate requests object
+include_once '../objects/requests.php';
+ 
 $database = new Database();
 $db = $database->getConnection();
  
-// prepare product object
-$product = new Product($db);
+$requests = new Requests($db);
  
-// get id of product to be edited
+// get posted data
 $data = json_decode(file_get_contents("php://input"));
  
  
 // set ID property of product to be edited
-$product->id = $data->id;
- 
-// set product property values
-$product->name = $data->name;
-$product->category_id = $data->category_id;
+$requests->title = $data->title;                
+$requests->address = $data->address;
+$requests->due_date = $data->due_date;
+$requests->content = $data->content;
+$requests->lat = $data->lat;
+$requests->lng = $data->lng;
+$requests->status = "open";
+$requests->created = $data->created;
+$requests->request_id = $data->requestId;
 
-if($product->update()){
+if($requests->update()){
     echo '{';
-        echo '"message": "Product was updated.","data":{"id":"'.$product->id.'","name":"'.$product->name.'","category_id":"'.$product->category_id.'"}';
+        echo '"message": "Request was successfully updated.","data":{"id":"'.$requests->request_id.'","title":"'.$requests->title.'","address":"'.$requests->address.'","content":"'.$requests->content.'","due_date":"'.$requests->due_date.'"}';
     echo '}';
 }
 

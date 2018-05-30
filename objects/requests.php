@@ -24,6 +24,8 @@ class Requests{
     public $title;
     public $status;
     public $requests_uid;
+    public $request_id;
+    
 
     public $lat;
     public $lng;
@@ -172,30 +174,65 @@ class Requests{
 
 
 
-// update the product
+// update the request
     function update(){
 
     // update query
         $query = "UPDATE
         " . $this->table_name . "
         SET
-        name = :name
-
+        title = :title,
+        address = :address,
+        due_date = :due_date,
+        content = :content,
+        lat = :lat,
+        lng = :lng,
+        status = :status,
+        created = :created
         WHERE
-        id = :id";
+        id = :request_id";
+
+/*
+        UPDATE 
+        `requests` 
+        SET 
+        title = "title", 
+        address = "address", 
+        due_date = "due_date", 
+        content = "content", 
+        lat = 23462346, 
+        lng = 23462346, 
+        status = "oprm", 
+        created = 345724573457 
+        WHERE 
+        id = 37
+*/
+
 
     // prepare query statement
         $stmt = $this->conn->prepare($query);
 
     // sanitize
-        $this->name=htmlspecialchars(strip_tags($this->name));
-        $this->id=htmlspecialchars(strip_tags($this->id));
-        $this->category_id=htmlspecialchars(strip_tags($this->category_id));
-
+        $this->title=htmlspecialchars(strip_tags($this->title));
+        $this->address=htmlspecialchars(strip_tags($this->address));
+        $this->due_date=htmlspecialchars(strip_tags($this->due_date));
+        $this->content=htmlspecialchars(strip_tags($this->content));
+        $this->lat=htmlspecialchars(strip_tags($this->lat));
+        $this->lng=htmlspecialchars(strip_tags($this->lng));
+        $this->status=htmlspecialchars(strip_tags($this->status));
+        $this->created=htmlspecialchars(strip_tags($this->created));
+        $this->request_id=htmlspecialchars(strip_tags($this->request_id));
 
     // bind new values
-        $stmt->bindParam(':name', $this->name);
-        $stmt->bindParam(':id', $this->id);
+        $stmt->bindParam(':title', $this->title);
+        $stmt->bindParam(':address', $this->address);
+        $stmt->bindParam(':due_date', $this->due_date);
+        $stmt->bindParam(':content', $this->content);
+        $stmt->bindParam(':lat', $this->lat);
+        $stmt->bindParam(':lng', $this->lng);
+        $stmt->bindParam(':status', $this->status);
+        $stmt->bindParam(':created', $this->created);
+        $stmt->bindParam(':request_id', $this->request_id);
 
     // execute the query
         if($stmt->execute()){
@@ -207,105 +244,125 @@ class Requests{
         return false;
     }
 
-// delete the product
+// delete the request
     function delete(){
 
-    // delete query
+    // delete request
         $query = "DELETE FROM " . $this->table_name . " WHERE id = ?";
-
-    // prepare query
         $stmt = $this->conn->prepare($query);
-
-    // sanitize
         $this->id=htmlspecialchars(strip_tags($this->id));
+        $stmt->bindValue(1, $this->request_id, PDO::PARAM_INT);
 
-    // bind id of record to delete
-        $stmt->bindValue(1, $this->id, PDO::PARAM_INT);
+        if($this->request_id !=''){
+            echo $this->request_id;
+            if($stmt->execute()){
+                $query = "DELETE FROM `comments` WHERE request_id = ?";
+                $stmt = $this->conn->prepare($query);
+                $this->id=htmlspecialchars(strip_tags($this->id));
+                $stmt->bindValue(1, $this->request_id, PDO::PARAM_INT);
 
-    // execute query
-        if($stmt->execute()){
-            return true;
-        }
-
-        return false;
-
-    }
+                if($stmt->execute()){
+                    $query = "DELETE FROM `offers` WHERE request_id = ?";
+                    $stmt = $this->conn->prepare($query);
+                    $this->id=htmlspecialchars(strip_tags($this->id));
+                    $stmt->bindValue(1, $this->request_id, PDO::PARAM_INT);
+                    if($stmt->execute()){
+                        return true;
+                    }else{
+                        echo '{';
+                        echo '"message": "Unable to delete offers.","error": "true"';
+                        echo '}';
+                    }
+                }else{
+                    echo '{';
+                    echo '"message": "Unable to delete comments.","error": "true"';
+                    echo '}';
+                }
+            }else{
+                echo '{';
+                echo '"message": "Unable to delete request.","error": "true"';
+                echo '}';
+            }
+        }else{
+       return false;
+     }
+ }
 // search products
-    function search($keywords){
+ function search($keywords){
 
     // select all query
-        $query = "SELECT
-        c.name as category_name, p.id, p.name, p.description, p.category_id, p.created
-        FROM
-        " . $this->table_name . " p
-        LEFT JOIN
-        categories c
-        ON p.category_id = c.id
-        WHERE
-        p.name LIKE ? OR p.description LIKE ? OR c.name LIKE ?
-        ORDER BY
-        p.created DESC";
+    $query = "SELECT
+    c.name as category_name, p.id, p.name, p.description, p.category_id, p.created
+    FROM
+    " . $this->table_name . " p
+    LEFT JOIN
+    categories c
+    ON p.category_id = c.id
+    WHERE
+    p.name LIKE ? OR p.description LIKE ? OR c.name LIKE ?
+    ORDER BY
+    p.created DESC";
 
     // prepare query statement
-        $stmt = $this->conn->prepare($query);
+    $stmt = $this->conn->prepare($query);
 
     // sanitize
-        $keywords=htmlspecialchars(strip_tags($keywords));
-        $keywords = "%{$keywords}%";
+    $keywords=htmlspecialchars(strip_tags($keywords));
+    $keywords = "%{$keywords}%";
 
     // bind
-        $stmt->bindParam(1, $keywords);
-        $stmt->bindParam(2, $keywords);
-        $stmt->bindParam(3, $keywords);
+    $stmt->bindParam(1, $keywords);
+    $stmt->bindParam(2, $keywords);
+    $stmt->bindParam(3, $keywords);
 
     // execute query
-        $stmt->execute();
+    $stmt->execute();
 
-        return $stmt;
-    }
+    return $stmt;
+}
 
 // read products with pagination
-    public function readPaging($from_record_num, $records_per_page){
+public function readPaging($from_record_num, $records_per_page){
 
     // select query
-        $query = "SELECT
-        c.name as category_name, p.id, p.name, p.description, p.category_id, p.created
-        FROM
-        " . $this->table_name . " p
-        LEFT JOIN
-        categories c
-        ON p.category_id = c.id
-        ORDER BY p.created DESC
-        LIMIT ?, ?";
+    $query = "SELECT
+    c.name as category_name, p.id, p.name, p.description, p.category_id, p.created
+    FROM
+    " . $this->table_name . " p
+    LEFT JOIN
+    categories c
+    ON p.category_id = c.id
+    ORDER BY p.created DESC
+    LIMIT ?, ?";
 
     // prepare query statement
-        $stmt = $this->conn->prepare( $query );
+    $stmt = $this->conn->prepare( $query );
 
     // bind variable values
-        $stmt->bindParam(1, $from_record_num, PDO::PARAM_INT);
-        $stmt->bindParam(2, $records_per_page, PDO::PARAM_INT);
+    $stmt->bindParam(1, $from_record_num, PDO::PARAM_INT);
+    $stmt->bindParam(2, $records_per_page, PDO::PARAM_INT);
 
     // execute query
-        $stmt->execute();
+    $stmt->execute();
 
     // return values from database
-        return $stmt;
-    }
+    return $stmt;
+}
 
 // used for paging products
-    public function count(){
-        $query = "SELECT COUNT(*) as total_rows FROM " . $this->table_name . "";
+public function count(){
+    $query = "SELECT COUNT(*) as total_rows FROM " . $this->table_name . "";
 
-        $stmt = $this->conn->prepare( $query );
-        $stmt->execute();
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    $stmt = $this->conn->prepare( $query );
+    $stmt->execute();
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return $row['total_rows'];
-    }
+    return $row['total_rows'];
+}
 
 
     // constructor with $db as database connection
-    public function __construct($db){
-        $this->conn = $db;
-    }
+public function __construct($db){
+    $this->conn = $db;
+}
 }

@@ -282,34 +282,43 @@ class Users{
         password = :password
         WHERE
         id = :userId";
-
+        if($this->confirmPassword !='' && $this->userId !=''){  
     // prepare query statement
-        $stmt = $this->conn->prepare($query);
+            $stmt = $this->conn->prepare($query);
 
         //echo "password to be hashed=".$this->confirmPassword;
 
-        $this->confirmPassword = hash('sha256',$this->confirmPassword); 
+            $this->confirmPassword = hash('sha256',$this->confirmPassword); 
 
     // sanitize
-        $this->userId=htmlspecialchars(strip_tags($this->userId));
-        $this->user_name=htmlspecialchars(strip_tags($this->user_name));
+            $this->userId=htmlspecialchars(strip_tags($this->userId));
+            $this->user_name=htmlspecialchars(strip_tags($this->user_name));
+
+        //echo "password from user=".$data->confirmPassword."<br/>";
 
     // bind new values
-        $stmt->bindParam(':userId', $this->userId);
-        $stmt->bindParam(':password', $this->confirmPassword);
+            $stmt->bindParam(':userId', $this->userId);
+            $stmt->bindParam(':password', $this->confirmPassword);
 
 
         //echo $query;
 
     // execute the query
-        if($stmt->execute()){         
-            return true;
-        }
-        echo '{';
-        echo '  "message": "Could not update user table -- password","error": null,"data": null';
-        echo '}';
 
-        exit();
+            if($stmt->execute()){         
+                return true;
+            }else{
+                echo '{';
+                echo '  "message": "Could not update user table -- password","error": null,"data": null';
+                echo '}';
+                exit();
+            }
+        }else{
+            echo '{';
+            echo '  "message": "Could not update user table ** confirm password missing","error": null,"data": null';
+            echo '}'; 
+            exit();
+        }
     }
 
     // update the table verify account

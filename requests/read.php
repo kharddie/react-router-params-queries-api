@@ -76,7 +76,7 @@ if($num>0){
 
         $requests_arr["message"] = "success";
         $requests_arr["error"] = null;
-    echo json_encode($requests_arr);
+        echo json_encode($requests_arr);
 }
 
 else{
